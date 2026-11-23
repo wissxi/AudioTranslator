@@ -160,6 +160,18 @@ def test_bridge_start_runs_job_and_emits(bridge, tmp_path, monkeypatch):
     assert bridge.start([]) == {"ok": False, "error": "empty"}
 
 
+def test_bridge_start_applies_page_settings(bridge, tmp_path):
+    from conftest import FakeTranscriber, write_wav
+
+    bridge._transcriber = FakeTranscriber()
+    bridge._emit = lambda event: None
+    path = write_wav(tmp_path / "a.wav")
+    page = {**bridge.init()["settings"], "target_language": "", "formats": ["json"], "report": False}
+    assert bridge.start([{"id": "x", "path": str(path)}], page) == {"ok": True}
+    bridge._thread.join(10)
+    assert (tmp_path / "a.json").exists() and not (tmp_path / "a.txt").exists()
+
+
 def test_bridge_open_url_only_web(bridge, monkeypatch):
     opened = []
     monkeypatch.setattr("webbrowser.open", opened.append)

@@ -188,10 +188,13 @@ class Bridge:
     def add_paths(self, paths: list[str]) -> list[dict[str, Any]]:
         return self._infos(list(paths or []))
 
-    def start(self, items: list[dict[str, str]]) -> dict[str, Any]:
+    def start(self, items: list[dict[str, str]], settings: dict[str, Any] | None = None) -> dict[str, Any]:
         with self._lock:
             if self._thread is not None and self._thread.is_alive():
                 return {"ok": False, "error": "busy"}
+            if settings:
+                # The page sends its current settings so a change made a moment ago is never lost.
+                self.save_settings(settings)
             job = [JobItem(id=str(i["id"]), path=Path(i["path"])) for i in items or [] if i.get("path")]
             if not job:
                 return {"ok": False, "error": "empty"}

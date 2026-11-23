@@ -678,8 +678,13 @@
   }
 
   // -------------------------------------------------------------- settings
-  async function saveSettings(patch) {
+  async function saveSettings(patch, { quiet = false } = {}) {
     Object.assign(state.settings, patch);
+    if (quiet) {
+      // e.g. typing an API key: store it without re-rendering the field being edited
+      await api.save_settings(patch);
+      return;
+    }
     renderDeck();
     const saved = await api.save_settings(patch);
     if (saved) state.settings = saved;
@@ -817,7 +822,7 @@
       let timer;
       key.addEventListener("input", () => {
         clearTimeout(timer);
-        timer = setTimeout(() => saveSettings({ deepl_key: key.value.trim() }), 400);
+        timer = setTimeout(() => saveSettings({ deepl_key: key.value.trim() }, { quiet: true }), 400);
       });
     }
   }
@@ -927,7 +932,10 @@
     state.follow = true;
     state.job = { ids: items.map((i) => i.id), phase: "model", index: 0, stopping: false, startedAt: Date.now() };
     renderAll();
-    const result = await api.start(items.map(({ id, path }) => ({ id, path })));
+    const result = await api.start(
+      items.map(({ id, path }) => ({ id, path })),
+      state.settings,
+    );
     if (result && result.ok === false) {
       state.running = false;
       state.job = null;
