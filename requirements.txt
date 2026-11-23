@@ -1,0 +1,6 @@
+openai-whisper>=20231117
+googletrans==4.0.0rc1
+tqdm>=4.66.0
+torch>=2.0.0
+customtkinter>=5.2.0
+
