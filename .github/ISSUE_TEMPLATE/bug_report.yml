@@ -1,0 +1,40 @@
+name: Bug report / Сообщить об ошибке
+description: Something does not work as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened? / Что случилось?
+      description: What you did, what you expected, what you got instead.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version / Версия
+      description: Settings → About, or the release you downloaded.
+      placeholder: "2.0.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How do you run it? / Как вы запускаете?
+      options:
+        - Installer (setup.exe)
+        - Portable zip
+        - From source (pip)
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS / Система
+      placeholder: Windows 11 23H2
+  - type: textarea
+    id: log
+    attributes:
+      label: Log / Лог
+      description: Attach the end of `%LOCALAPPDATA%\AudioTranslator\audiotranslator.log` (remove anything private).
+      render: text
